@@ -1,0 +1,718 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
+<title>Vidsto – Discover & Download Free Videos</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<style>
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
+html,body{width:100%;max-width:100%;overflow-x:hidden;}
+
+:root{
+  --accent:#7C3AED;--accent-light:#A78BFA;--accent-glow:rgba(124,58,237,0.15);
+  --bg:#F8F7FF;--bg2:#FFFFFF;--bg3:#EDE9FE;
+  --text:#1a1625;--text2:#4B5563;--text3:#9CA3AF;
+  --border:#E5E7EB;--card-bg:#FFFFFF;
+  --shadow:0 2px 12px rgba(124,58,237,0.07);--shadow-hover:0 8px 28px rgba(124,58,237,0.18);
+  --nav-bg:rgba(248,247,255,0.96);--tag-bg:#EDE9FE;--tag-text:#6D28D9;
+  --input-bg:#F3F0FF;--danger:#EF4444;
+}
+[data-theme="dark"]{
+  --bg:#0D0B14;--bg2:#13111E;--bg3:#1E1830;
+  --text:#F3F0FF;--text2:#C4B5FD;--text3:#6B7280;
+  --border:#2D2540;--card-bg:#1A1628;
+  --shadow:0 2px 16px rgba(0,0,0,0.4);--shadow-hover:0 8px 32px rgba(124,58,237,0.3);
+  --nav-bg:rgba(13,11,20,0.97);--tag-bg:#2D1F5E;--tag-text:#A78BFA;--input-bg:#1E1830;
+}
+
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;transition:background .3s,color .3s;}
+.page{display:none;min-height:100vh;padding-bottom:72px;}
+.page.active{display:block;}
+
+/* NAV */
+nav{position:sticky;top:0;z-index:200;background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:0 12px;height:58px;display:flex;align-items:center;gap:8px;width:100%;}
+.logo{font-family:'Syne',sans-serif;font-weight:800;font-size:21px;color:var(--accent);letter-spacing:-.5px;flex-shrink:0;cursor:pointer;}
+.logo span{color:var(--text);}
+
+/* Search bar — always visible, full width flex */
+.search-bar{flex:1;display:flex;align-items:center;background:var(--input-bg);border:1.5px solid transparent;border-radius:12px;padding:0 11px;height:38px;gap:6px;transition:border-color .2s;min-width:0;overflow:hidden;}
+.search-bar:focus-within{border-color:var(--accent);box-shadow:0 0 0 3px var(--accent-glow);}
+.search-icon{font-size:14px;flex-shrink:0;}
+.search-bar input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;min-width:0;width:100%;}
+.search-bar input::placeholder{color:var(--text3);}
+
+.nav-right{display:flex;align-items:center;gap:6px;flex-shrink:0;}
+.icon-btn{width:36px;height:36px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;flex-shrink:0;}
+.icon-btn:hover{border-color:var(--accent);}
+
+/* Desktop: show text buttons */
+.btn-login{padding:7px 12px;border-radius:10px;border:1.5px solid var(--border);background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
+.btn-signup{padding:7px 12px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;white-space:nowrap;}
+
+/* Mobile: hide login/signup text buttons */
+@media(max-width:500px){
+  .btn-login,.btn-signup{display:none;}
+  .mob-auth-wrap{display:flex!important;}
+}
+.mob-auth-wrap{display:none;gap:5px;flex-shrink:0;}
+.mob-btn{padding:6px 10px;border-radius:9px;font-size:11px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;white-space:nowrap;}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--nav-bg);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:6px 0 10px;z-index:200;}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 8px;border-radius:10px;transition:all .2s;color:var(--text3);position:relative;}
+.nav-item.active{color:var(--accent);}
+.nav-item .ni{font-size:19px;}
+.nav-item .nl{font-size:10px;font-weight:500;}
+.notif-dot{width:8px;height:8px;background:#EF4444;border-radius:50%;position:absolute;top:2px;right:6px;}
+
+/* PAGE HEADER */
+.page-header{padding:14px 12px 6px;display:flex;align-items:center;gap:9px;}
+.page-header h2{font-family:'Syne',sans-serif;font-size:19px;font-weight:800;}
+.back-btn{width:32px;height:32px;border-radius:8px;border:1px solid var(--border);background:var(--bg2);cursor:pointer;display:flex;align-items:center;justify-content:center;font-size:14px;flex-shrink:0;}
+
+/* HERO */
+.hero{text-align:center;padding:36px 16px 20px;max-width:500px;margin:0 auto;}
+.hero-badge{display:inline-flex;align-items:center;gap:5px;background:var(--tag-bg);color:var(--tag-text);font-size:11px;font-weight:500;padding:4px 12px;border-radius:20px;margin-bottom:12px;}
+.hero h1{font-family:'Syne',sans-serif;font-size:clamp(24px,7vw,42px);font-weight:800;line-height:1.15;letter-spacing:-1px;margin-bottom:9px;}
+.hero h1 .hl{color:var(--accent);}
+.hero p{color:var(--text2);font-size:13px;line-height:1.6;margin-bottom:18px;}
+.hero-stats{display:flex;justify-content:center;gap:28px;}
+.stat-num{font-family:'Syne',sans-serif;font-size:18px;font-weight:700;color:var(--accent);}
+.stat-label{font-size:10px;color:var(--text3);margin-top:1px;}
+
+/* CATEGORIES */
+.categories{padding:0 10px 14px;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;width:100%;}
+.categories::-webkit-scrollbar{display:none;}
+.cat-pill{flex-shrink:0;padding:6px 13px;border-radius:20px;font-size:12px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);transition:all .2s;white-space:nowrap;}
+.cat-pill:hover,.cat-pill.active{background:var(--accent);color:#fff;border-color:var(--accent);}
+
+/* PREMIUM BANNER */
+.premium-banner{margin:0 10px 16px;background:linear-gradient(135deg,var(--accent) 0%,#A855F7 100%);border-radius:14px;padding:15px 16px;display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.premium-banner h3{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:#fff;margin-bottom:2px;}
+.premium-banner p{font-size:11px;color:rgba(255,255,255,.8);}
+.btn-premium{flex-shrink:0;padding:7px 13px;background:#fff;color:var(--accent);border:none;border-radius:9px;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;}
+
+/* GRID */
+.grid-wrap{padding:0 9px 16px;}
+.section-title{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;padding:0 3px 10px;color:var(--text);}
+.video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;width:100%;}
+@media(min-width:500px){.video-grid{grid-template-columns:repeat(3,1fr);}}
+@media(min-width:800px){.video-grid{grid-template-columns:repeat(4,1fr);}}
+@media(min-width:1100px){.video-grid{grid-template-columns:repeat(5,1fr);}}
+
+.video-card{background:var(--card-bg);border-radius:12px;overflow:hidden;box-shadow:var(--shadow);cursor:pointer;transition:transform .22s,box-shadow .22s;position:relative;animation:fadeUp .4s ease both;}
+.video-card:hover{transform:translateY(-3px);box-shadow:var(--shadow-hover);}
+@keyframes fadeUp{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+.thumb{width:100%;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center;position:relative;}
+.play-btn{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:30px;height:30px;background:rgba(255,255,255,.9);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;opacity:0;transition:opacity .2s;}
+.video-card:hover .play-btn{opacity:1;}
+.dur{position:absolute;bottom:5px;right:6px;background:rgba(0,0,0,.72);color:#fff;font-size:9px;font-weight:500;padding:2px 5px;border-radius:4px;}
+.pro-badge{position:absolute;top:5px;left:6px;background:var(--accent);color:#fff;font-size:8px;font-weight:700;padding:2px 6px;border-radius:4px;}
+.card-info{padding:8px 9px 9px;}
+.card-title{font-size:11px;font-weight:500;color:var(--text);margin-bottom:4px;line-height:1.3;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;}
+.card-meta{display:flex;align-items:center;justify-content:space-between;}
+.card-tag{font-size:9px;font-weight:500;color:var(--tag-text);background:var(--tag-bg);padding:2px 6px;border-radius:4px;}
+.card-dl{font-size:10px;color:var(--text3);}
+
+/* PROFILE */
+.profile-header{padding:22px 16px 0;display:flex;flex-direction:column;align-items:center;}
+.avatar-wrap{position:relative;margin-bottom:10px;}
+.avatar{width:80px;height:80px;border-radius:50%;background:linear-gradient(135deg,var(--accent),#A855F7);display:flex;align-items:center;justify-content:center;font-size:34px;border:3px solid var(--bg);}
+.avatar-edit{position:absolute;bottom:0;right:0;width:24px;height:24px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;cursor:pointer;border:2px solid var(--bg);}
+.profile-name{font-family:'Syne',sans-serif;font-size:19px;font-weight:700;margin-bottom:2px;}
+.profile-handle{font-size:12px;color:var(--text3);margin-bottom:10px;}
+.profile-stats{display:flex;gap:0;border:1px solid var(--border);border-radius:13px;overflow:hidden;margin-bottom:14px;width:100%;max-width:300px;}
+.pstat{flex:1;padding:9px 4px;text-align:center;border-right:1px solid var(--border);}
+.pstat:last-child{border-right:none;}
+.pstat-num{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;color:var(--accent);}
+.pstat-label{font-size:10px;color:var(--text3);}
+.profile-actions{display:flex;gap:7px;margin-bottom:16px;width:100%;max-width:300px;}
+.btn-outline{flex:1;padding:8px;border-radius:9px;border:1.5px solid var(--border);background:transparent;color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+.btn-accent-sm{flex:1;padding:8px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;}
+
+/* MENU */
+.menu-list{padding:0 12px 20px;}
+.menu-section-title{font-size:10px;font-weight:600;color:var(--text3);letter-spacing:.8px;text-transform:uppercase;padding:14px 0 7px;}
+.menu-item{display:flex;align-items:center;gap:11px;padding:12px 13px;background:var(--bg2);border-radius:11px;margin-bottom:7px;cursor:pointer;border:1px solid var(--border);transition:all .2s;}
+.menu-item:hover{border-color:var(--accent);background:var(--accent-glow);}
+.menu-icon{width:34px;height:34px;border-radius:9px;background:var(--tag-bg);display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0;}
+.menu-label{flex:1;font-size:13px;font-weight:500;}
+.menu-arrow{color:var(--text3);font-size:13px;}
+.menu-item.danger .menu-label{color:var(--danger);}
+.menu-item.danger .menu-icon{background:#FEE2E2;}
+
+/* SETTINGS */
+.settings-wrap{padding:14px 12px;}
+.settings-section{margin-bottom:18px;}
+.settings-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:9px;}
+.setting-row{display:flex;align-items:center;justify-content:space-between;padding:12px 13px;background:var(--bg2);border-radius:11px;margin-bottom:7px;border:1px solid var(--border);}
+.setting-name{font-size:13px;font-weight:500;margin-bottom:1px;}
+.setting-desc{font-size:11px;color:var(--text3);}
+.toggle{width:42px;height:23px;background:var(--border);border-radius:12px;position:relative;cursor:pointer;transition:background .3s;flex-shrink:0;}
+.toggle.on{background:var(--accent);}
+.toggle::after{content:'';position:absolute;top:3px;left:3px;width:17px;height:17px;background:#fff;border-radius:50%;transition:transform .3s;box-shadow:0 1px 4px rgba(0,0,0,.2);}
+.toggle.on::after{transform:translateX(19px);}
+
+/* EXPLORE */
+.explore-wrap{padding:12px;}
+.explore-search{display:flex;align-items:center;background:var(--input-bg);border:1.5px solid var(--border);border-radius:12px;padding:0 13px;height:41px;gap:7px;margin-bottom:14px;}
+.explore-search:focus-within{border-color:var(--accent);}
+.explore-search input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+.explore-search input::placeholder{color:var(--text3);}
+.explore-tags{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:16px;}
+.explore-tag{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:500;cursor:pointer;border:1.5px solid var(--border);background:var(--bg2);color:var(--text2);transition:all .2s;}
+.explore-tag:hover{background:var(--accent);color:#fff;border-color:var(--accent);}
+.trending-title{font-family:'Syne',sans-serif;font-size:14px;font-weight:700;margin-bottom:10px;}
+.trending-item{display:flex;align-items:center;gap:11px;padding:10px 13px;background:var(--bg2);border-radius:10px;margin-bottom:7px;cursor:pointer;border:1px solid var(--border);transition:all .2s;}
+.trending-item:hover{border-color:var(--accent);}
+.trend-num{font-family:'Syne',sans-serif;font-size:13px;font-weight:700;color:var(--accent);width:18px;}
+.trend-info{flex:1;}
+.trend-name{font-size:12px;font-weight:500;}
+.trend-count{font-size:10px;color:var(--text3);}
+
+/* UPLOAD */
+.upload-wrap{padding:14px 12px;}
+.upload-zone{border:2px dashed var(--accent-light);border-radius:14px;padding:32px 16px;text-align:center;background:var(--accent-glow);margin-bottom:16px;cursor:pointer;}
+.upload-icon{font-size:40px;margin-bottom:8px;}
+.upload-zone h3{font-family:'Syne',sans-serif;font-size:15px;font-weight:700;margin-bottom:4px;}
+.upload-zone p{font-size:11px;color:var(--text3);}
+.form-group{margin-bottom:12px;}
+.form-label{font-size:11px;font-weight:500;color:var(--text2);margin-bottom:4px;display:block;}
+.form-input{width:100%;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;transition:border-color .2s;}
+.form-input:focus{border-color:var(--accent);}
+.form-input::placeholder{color:var(--text3);}
+.btn-full{width:100%;padding:11px;border-radius:10px;border:none;background:var(--accent);color:#fff;font-family:'DM Sans',sans-serif;font-size:14px;font-weight:600;cursor:pointer;margin-top:4px;}
+.form-select{width:100%;padding:10px 13px;border-radius:10px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.upload-tips{background:var(--bg3);border-radius:11px;padding:12px;margin-top:14px;}
+.upload-tips h4{font-size:11px;font-weight:600;margin-bottom:7px;color:var(--text2);}
+.upload-tips li{font-size:10px;color:var(--text3);margin-left:12px;margin-bottom:3px;}
+
+/* SAVED */
+.saved-wrap{padding:12px;}
+.saved-empty{text-align:center;padding:50px 16px;}
+.saved-empty .e-icon{font-size:48px;margin-bottom:10px;}
+.saved-empty h3{font-family:'Syne',sans-serif;font-size:17px;font-weight:700;margin-bottom:5px;}
+.saved-empty p{font-size:12px;color:var(--text3);}
+
+/* AUTH */
+.auth-wrap{min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px 80px;}
+.auth-box{width:100%;max-width:380px;background:var(--bg2);border-radius:20px;border:1px solid var(--border);padding:26px 22px;box-shadow:var(--shadow);}
+.auth-logo{font-family:'Syne',sans-serif;font-weight:800;font-size:24px;color:var(--accent);text-align:center;margin-bottom:3px;}
+.auth-logo span{color:var(--text);}
+.auth-sub{text-align:center;font-size:12px;color:var(--text3);margin-bottom:20px;}
+.auth-tabs{display:flex;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:18px;}
+.auth-tab{flex:1;padding:8px;text-align:center;font-size:13px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--text3);transition:all .2s;}
+.auth-tab.active{background:var(--accent);color:#fff;}
+.auth-divider{display:flex;align-items:center;gap:8px;margin:14px 0;color:var(--text3);font-size:11px;}
+.auth-divider::before,.auth-divider::after{content:'';flex:1;height:1px;background:var(--border);}
+.social-btn{width:100%;padding:10px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg2);color:var(--text);font-family:'DM Sans',sans-serif;font-size:12px;font-weight:500;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:7px;}
+.forgot-link{text-align:right;margin-bottom:3px;}
+.forgot-link a{font-size:11px;color:var(--accent);text-decoration:none;}
+.auth-switch{text-align:center;font-size:12px;color:var(--text3);margin-top:14px;}
+.auth-switch a{color:var(--accent);text-decoration:none;font-weight:500;}
+
+/* FRIENDS */
+.friends-wrap{padding:12px;}
+.friends-search{display:flex;align-items:center;background:var(--input-bg);border:1.5px solid var(--border);border-radius:11px;padding:0 12px;height:40px;gap:7px;margin-bottom:14px;}
+.friends-search:focus-within{border-color:var(--accent);}
+.friends-search input{flex:1;border:none;background:transparent;font-family:'DM Sans',sans-serif;font-size:13px;color:var(--text);outline:none;}
+.friends-search input::placeholder{color:var(--text3);}
+.friends-tabs{display:flex;gap:0;background:var(--bg3);border-radius:10px;padding:3px;margin-bottom:14px;}
+.ftab{flex:1;padding:7px;text-align:center;font-size:12px;font-weight:500;border-radius:8px;cursor:pointer;color:var(--text3);transition:all .2s;}
+.ftab.active{background:var(--accent);color:#fff;}
+
+/* friend items — online dot ONLY here */
+.friend-item{display:flex;align-items:center;gap:11px;padding:11px 12px;background:var(--bg2);border-radius:11px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);transition:all .2s;}
+.friend-item:hover{border-color:var(--accent);}
+.f-avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;position:relative;}
+/* online dot ONLY inside .friends-wrap */
+.friends-wrap .online-dot{width:11px;height:11px;background:#22C55E;border-radius:50%;position:absolute;bottom:1px;right:1px;border:2px solid var(--bg2);}
+.friend-info{flex:1;min-width:0;}
+.friend-name{font-size:13px;font-weight:500;margin-bottom:2px;}
+.friend-status{font-size:11px;color:var(--text3);}
+.add-btn{padding:5px 12px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-family:'DM Sans',sans-serif;font-size:11px;font-weight:500;cursor:pointer;transition:all .2s;}
+.add-btn:hover{background:var(--accent);color:#fff;}
+.msg-btn{width:34px;height:34px;border-radius:9px;border:none;background:var(--accent);color:#fff;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+
+/* CHAT LIST */
+.chat-item{display:flex;align-items:center;gap:11px;padding:11px 12px;background:var(--bg2);border-radius:11px;margin-bottom:8px;cursor:pointer;border:1px solid var(--border);transition:all .2s;}
+.chat-item:hover{border-color:var(--accent);}
+.chat-avatar{width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;position:relative;}
+/* online dot in chat list — also inside friends-wrap so scoped */
+.chat-info{flex:1;min-width:0;}
+.chat-name{font-size:13px;font-weight:600;margin-bottom:2px;}
+.chat-preview{font-size:11px;color:var(--text3);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.chat-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0;}
+.chat-time{font-size:10px;color:var(--text3);}
+.unread-badge{width:18px;height:18px;background:var(--accent);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff;}
+
+/* CHAT ROOM */
+#page-chatroom{display:none;flex-direction:column;height:calc(100vh - 58px);padding-bottom:0!important;}
+#page-chatroom.active{display:flex!important;}
+.chat-room-header{padding:10px 12px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;background:var(--bg2);}
+.cr-avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;background:linear-gradient(135deg,var(--accent),#A855F7);flex-shrink:0;}
+.cr-name{font-size:14px;font-weight:600;}
+.cr-status{font-size:11px;color:#22C55E;}
+.chat-messages{flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;}
+.msg{max-width:75%;display:flex;flex-direction:column;gap:3px;}
+.msg.mine{align-self:flex-end;align-items:flex-end;}
+.msg.theirs{align-self:flex-start;align-items:flex-start;}
+.msg-bubble{padding:9px 13px;border-radius:16px;font-size:13px;line-height:1.4;}
+.msg.mine .msg-bubble{background:var(--accent);color:#fff;border-bottom-right-radius:4px;}
+.msg.theirs .msg-bubble{background:var(--bg3);color:var(--text);border-bottom-left-radius:4px;}
+.msg-time{font-size:10px;color:var(--text3);}
+.chat-input-bar{padding:10px 12px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;background:var(--bg2);}
+.chat-input{flex:1;padding:10px 14px;border-radius:22px;border:1.5px solid var(--border);background:var(--input-bg);color:var(--text);font-family:'DM Sans',sans-serif;font-size:13px;outline:none;}
+.chat-input:focus{border-color:var(--accent);}
+.send-btn{width:38px;height:38px;border-radius:50%;border:none;background:var(--accent);color:#fff;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+/* DESKTOP */
+@media(min-width:768px){
+  .hero{padding:52px 24px 32px;}
+  .grid-wrap{padding:0 16px 24px;}
+  .categories{padding:0 16px 18px;}
+  .premium-banner{margin:0 16px 20px;}
+}
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo" onclick="goPage('home')">Vid<span>sto</span></div>
+  <div class="search-bar">
+    <span class="search-icon">🔍</span>
+    <input type="text" placeholder="Search videos, footage..."/>
+  </div>
+  <div class="nav-right">
+    <button class="icon-btn" id="themeBtn">🌙</button>
+    <button class="btn-login" onclick="goPage('auth')">Login</button>
+    <button class="btn-signup" onclick="goPage('auth')">Sign up</button>
+    <div class="mob-auth-wrap">
+      <button class="mob-btn" style="border:1.5px solid var(--border);background:transparent;color:var(--text);" onclick="goPage('auth')">Login</button>
+      <button class="mob-btn" style="border:none;background:var(--accent);color:#fff;" onclick="goPage('auth')">Join</button>
+    </div>
+  </div>
+</nav>
+
+<!-- HOME -->
+<div class="page active" id="page-home">
+  <div class="hero">
+    <div class="hero-badge">✨ 100% Free to Download</div>
+    <h1>Discover & Download<br/><span class="hl">Stunning Videos</span></h1>
+    <p>Free stock footage, funny clips, and editing materials — all in one place.</p>
+    <div class="hero-stats">
+      <div class="stat"><div class="stat-num">12K+</div><div class="stat-label">Videos</div></div>
+      <div class="stat"><div class="stat-num">3.4K</div><div class="stat-label">Creators</div></div>
+      <div class="stat"><div class="stat-num">Free</div><div class="stat-label">Always</div></div>
+    </div>
+  </div>
+  <div class="categories">
+    <div class="cat-pill active" onclick="filterCat(this)">All</div>
+    <div class="cat-pill" onclick="filterCat(this)">🎬 Stock</div>
+    <div class="cat-pill" onclick="filterCat(this)">😂 Funny</div>
+    <div class="cat-pill" onclick="filterCat(this)">✂️ Editing</div>
+    <div class="cat-pill" onclick="filterCat(this)">🌿 Nature</div>
+    <div class="cat-pill" onclick="filterCat(this)">🏙️ Urban</div>
+    <div class="cat-pill" onclick="filterCat(this)">🎨 Aesthetic</div>
+    <div class="cat-pill" onclick="filterCat(this)">🍕 Food</div>
+  </div>
+  <div class="premium-banner">
+    <div><h3>🔒 Unlock Premium</h3><p>4K exclusives, no ads, unlimited downloads</p></div>
+    <button class="btn-premium" onclick="goPage('auth')">Upgrade ✦</button>
+  </div>
+  <div class="grid-wrap">
+    <div class="section-title">Trending Now 🔥</div>
+    <div class="video-grid" id="homeGrid"></div>
+  </div>
+</div>
+
+<!-- EXPLORE -->
+<div class="page" id="page-explore">
+  <div class="page-header"><h2>Explore 🔭</h2></div>
+  <div class="explore-wrap">
+    <div class="explore-search"><span>🔍</span><input type="text" placeholder="Search anything..."/></div>
+    <div class="explore-tags">
+      <div class="explore-tag">🎬 Cinematic</div><div class="explore-tag">😂 Funny</div>
+      <div class="explore-tag">🌿 Nature</div><div class="explore-tag">✂️ Transitions</div>
+      <div class="explore-tag">🌆 City</div><div class="explore-tag">🏖️ Beach</div>
+      <div class="explore-tag">⚡ Action</div><div class="explore-tag">🎨 Aesthetic</div>
+      <div class="explore-tag">🍕 Food</div><div class="explore-tag">🚗 Cars</div>
+      <div class="explore-tag">💨 VFX</div><div class="explore-tag">🌙 Night</div>
+    </div>
+    <div class="trending-title">🔥 Trending Searches</div>
+    <div class="trending-item"><span class="trend-num">1</span><div class="trend-info"><div class="trend-name">Cinematic drone footage</div><div class="trend-count">8.2k searches</div></div><span>🚁</span></div>
+    <div class="trending-item"><span class="trend-num">2</span><div class="trend-info"><div class="trend-name">Glitch transitions pack</div><div class="trend-count">6.7k searches</div></div><span>⚡</span></div>
+    <div class="trending-item"><span class="trend-num">3</span><div class="trend-info"><div class="trend-name">Aesthetic lofi clips</div><div class="trend-count">5.1k searches</div></div><span>🌙</span></div>
+    <div class="trending-item"><span class="trend-num">4</span><div class="trend-info"><div class="trend-name">Funny animal fails</div><div class="trend-count">4.8k searches</div></div><span>🐾</span></div>
+    <div class="trending-item"><span class="trend-num">5</span><div class="trend-info"><div class="trend-name">4K nature timelapse</div><div class="trend-count">4.2k searches</div></div><span>🌲</span></div>
+    <br/>
+    <div class="section-title">New Arrivals ✨</div>
+    <div class="video-grid" id="exploreGrid"></div>
+  </div>
+</div>
+
+<!-- UPLOAD -->
+<div class="page" id="page-upload">
+  <div class="page-header"><h2>Upload Video 📤</h2></div>
+  <div class="upload-wrap">
+    <div class="upload-zone">
+      <div class="upload-icon">🎬</div>
+      <h3>Tap to Upload</h3>
+      <p>MP4, MOV up to 2GB · Min 720p</p>
+    </div>
+    <div class="form-group"><label class="form-label">Video Title *</label><input class="form-input" type="text" placeholder="Give your video a great title..."/></div>
+    <div class="form-group"><label class="form-label">Description</label><textarea class="form-input" rows="3" placeholder="Describe your video..." style="resize:none;"></textarea></div>
+    <div class="form-group"><label class="form-label">Category *</label>
+      <select class="form-select"><option value="">Select category</option><option>🎬 Stock Footage</option><option>😂 Funny Clips</option><option>✂️ Editing Material</option><option>🌿 Nature</option><option>🏙️ Urban</option><option>🎨 Aesthetic</option><option>⚡ Action</option><option>🍕 Food</option></select>
+    </div>
+    <div class="form-group"><label class="form-label">Tags</label><input class="form-input" type="text" placeholder="nature, 4k, cinematic"/></div>
+    <div class="form-group"><label class="form-label">License</label>
+      <select class="form-select"><option>Free — Anyone can download</option><option>Premium Only</option></select>
+    </div>
+    <button class="btn-full">Upload Video 🚀</button>
+    <div class="upload-tips"><h4>📋 Guidelines</h4><ul><li>Minimum 720p resolution</li><li>No copyrighted music</li><li>No harmful content</li><li>You earn from ad views on your videos</li></ul></div>
+  </div>
+</div>
+
+<!-- SAVED -->
+<div class="page" id="page-saved">
+  <div class="page-header"><button class="back-btn" onclick="goPage('profile')">‹</button><h2>Saved 🔖</h2></div>
+  <div class="saved-wrap">
+    <div class="saved-empty">
+      <div class="e-icon">🔖</div>
+      <h3>Nothing saved yet</h3>
+      <p>Tap the bookmark icon on any video to save it here</p>
+      <br/>
+      <button class="btn-full" style="max-width:180px;margin:0 auto;" onclick="goPage('home')">Browse Videos</button>
+    </div>
+  </div>
+</div>
+
+<!-- FRIENDS -->
+<div class="page" id="page-friends">
+  <div class="page-header"><h2>Friends 👥</h2></div>
+  <div class="friends-wrap">
+    <div class="friends-search"><span>🔍</span><input type="text" placeholder="Search friends..."/></div>
+    <div class="friends-tabs">
+      <div class="ftab active" onclick="switchFTab(this,'fl')">Friends</div>
+      <div class="ftab" onclick="switchFTab(this,'chatlist')">Messages</div>
+      <div class="ftab" onclick="switchFTab(this,'discover')">Discover</div>
+    </div>
+
+    <!-- FRIENDS LIST -->
+    <div id="fl">
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#FF6B35,#FFB347);">😎<div class="online-dot"></div></div>
+        <div class="friend-info"><div class="friend-name">Alex Rivera</div><div class="friend-status">Online now</div></div>
+        <button class="msg-btn" onclick="openChat('Alex Rivera','😎')">💬</button>
+      </div>
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#4ECDC4,#44AF69);">🎨<div class="online-dot"></div></div>
+        <div class="friend-info"><div class="friend-name">Mia Chen</div><div class="friend-status">Online now</div></div>
+        <button class="msg-btn" onclick="openChat('Mia Chen','🎨')">💬</button>
+      </div>
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#A855F7,#7C3AED);">🎬</div>
+        <div class="friend-info"><div class="friend-name">Jordan K.</div><div class="friend-status">Last seen 3h ago</div></div>
+        <button class="msg-btn" onclick="openChat('Jordan K.','🎬')">💬</button>
+      </div>
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#FF006E,#FF6B6B);">🌟</div>
+        <div class="friend-info"><div class="friend-name">Sam Park</div><div class="friend-status">Last seen yesterday</div></div>
+        <button class="msg-btn" onclick="openChat('Sam Park','🌟')">💬</button>
+      </div>
+    </div>
+
+    <!-- CHAT LIST -->
+    <div id="chatlist" style="display:none">
+      <div class="chat-item" onclick="openChat('Alex Rivera','😎')">
+        <div class="chat-avatar" style="background:linear-gradient(135deg,#FF6B35,#FFB347);">😎<div class="online-dot"></div></div>
+        <div class="chat-info"><div class="chat-name">Alex Rivera</div><div class="chat-preview">Bro check this clip out 🔥</div></div>
+        <div class="chat-meta"><div class="chat-time">2m</div><div class="unread-badge">3</div></div>
+      </div>
+      <div class="chat-item" onclick="openChat('Mia Chen','🎨')">
+        <div class="chat-avatar" style="background:linear-gradient(135deg,#4ECDC4,#44AF69);">🎨<div class="online-dot"></div></div>
+        <div class="chat-info"><div class="chat-name">Mia Chen</div><div class="chat-preview">That transition pack is 🤌</div></div>
+        <div class="chat-meta"><div class="chat-time">1h</div></div>
+      </div>
+      <div class="chat-item" onclick="openChat('Jordan K.','🎬')">
+        <div class="chat-avatar" style="background:linear-gradient(135deg,#A855F7,#7C3AED);">🎬</div>
+        <div class="chat-info"><div class="chat-name">Jordan K.</div><div class="chat-preview">Shared a video with you</div></div>
+        <div class="chat-meta"><div class="chat-time">3h</div><div class="unread-badge">1</div></div>
+      </div>
+    </div>
+
+    <!-- DISCOVER -->
+    <div id="discover" style="display:none">
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#FB923C,#F59E0B);">🎵</div>
+        <div class="friend-info"><div class="friend-name">Luna Wave</div><div class="friend-status">142 videos uploaded</div></div>
+        <button class="add-btn">+ Add</button>
+      </div>
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#06B6D4,#3B82F6);">🎥</div>
+        <div class="friend-info"><div class="friend-name">Ryo Takeda</div><div class="friend-status">89 videos uploaded</div></div>
+        <button class="add-btn">+ Add</button>
+      </div>
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#10B981,#059669);">🌿</div>
+        <div class="friend-info"><div class="friend-name">Priya Sharma</div><div class="friend-status">67 videos uploaded</div></div>
+        <button class="add-btn">+ Add</button>
+      </div>
+      <div class="friend-item">
+        <div class="f-avatar" style="background:linear-gradient(135deg,#EF4444,#DC2626);">🔥</div>
+        <div class="friend-info"><div class="friend-name">Kai Storm</div><div class="friend-status">204 videos uploaded</div></div>
+        <button class="add-btn">+ Add</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CHAT ROOM -->
+<div id="page-chatroom" style="display:none;position:fixed;top:58px;left:0;right:0;bottom:0;z-index:300;background:var(--bg);flex-direction:column;">
+  <div class="chat-room-header">
+    <button class="back-btn" onclick="closeChatRoom()">‹</button>
+    <div class="cr-avatar" id="crAvatar"></div>
+    <div><div class="cr-name" id="crName"></div><div class="cr-status">● Online</div></div>
+  </div>
+  <div class="chat-messages" id="chatMessages" style="flex:1;overflow-y:auto;padding:14px 12px;display:flex;flex-direction:column;gap:10px;">
+    <div class="msg theirs"><div class="msg-bubble">Hey! Saw your latest upload 🔥</div><div class="msg-time">2:14 PM</div></div>
+    <div class="msg mine"><div class="msg-bubble">Thanks! Still working on it 😄</div><div class="msg-time">2:15 PM</div></div>
+    <div class="msg theirs"><div class="msg-bubble">That transition at 0:22 is insane bro</div><div class="msg-time">2:15 PM</div></div>
+    <div class="msg mine"><div class="msg-bubble">Haha I got the pack from Vidsto 😏</div><div class="msg-time">2:16 PM</div></div>
+  </div>
+  <div class="chat-input-bar">
+    <input class="chat-input" type="text" placeholder="Type a message..." id="chatInput"/>
+    <button class="send-btn" onclick="sendMsg()">➤</button>
+  </div>
+</div>
+
+<!-- PROFILE -->
+<div class="page" id="page-profile">
+  <div class="profile-header">
+    <div class="avatar-wrap"><div class="avatar">👤</div><div class="avatar-edit">✏️</div></div>
+    <div class="profile-name">Your Name</div>
+    <div class="profile-handle">@username · Joined 2026</div>
+    <div class="profile-stats">
+      <div class="pstat"><div class="pstat-num">0</div><div class="pstat-label">Videos</div></div>
+      <div class="pstat"><div class="pstat-num">0</div><div class="pstat-label">Downloads</div></div>
+      <div class="pstat"><div class="pstat-num">$0</div><div class="pstat-label">Earned</div></div>
+    </div>
+    <div class="profile-actions">
+      <button class="btn-outline">Edit Profile</button>
+      <button class="btn-accent-sm" onclick="goPage('upload')">+ Upload</button>
+    </div>
+  </div>
+  <div class="menu-list">
+    <div class="menu-section-title">My Content</div>
+    <div class="menu-item" onclick="goPage('upload')"><div class="menu-icon">🎬</div><div class="menu-label">My Videos</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item" onclick="goPage('saved')"><div class="menu-icon">🔖</div><div class="menu-label">Saved Videos</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">💰</div><div class="menu-label">Creator Earnings</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">📊</div><div class="menu-label">My Analytics</div><span class="menu-arrow">›</span></div>
+
+    <div class="menu-section-title">Account</div>
+    <div class="menu-item" onclick="goPage('auth')"><div class="menu-icon">👤</div><div class="menu-label">Edit Profile</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item" onclick="goPage('auth')"><div class="menu-icon">🔒</div><div class="menu-label">Change Password</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">💳</div><div class="menu-label">Premium Subscription</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item" onclick="goPage('friends')"><div class="menu-icon">👥</div><div class="menu-label">Friends & Messages</div><span class="menu-arrow">›</span></div>
+
+    <div class="menu-section-title">App</div>
+    <div class="menu-item" onclick="goPage('settings')"><div class="menu-icon">⚙️</div><div class="menu-label">Settings</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">🔔</div><div class="menu-label">Notifications</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">❓</div><div class="menu-label">Help & Support</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">⭐</div><div class="menu-label">Rate Vidsto</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">🔗</div><div class="menu-label">Share Vidsto</div><span class="menu-arrow">›</span></div>
+
+    <div class="menu-section-title">Legal</div>
+    <div class="menu-item"><div class="menu-icon">📄</div><div class="menu-label">Terms of Service</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">🛡️</div><div class="menu-label">Privacy Policy</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item"><div class="menu-icon">©️</div><div class="menu-label">Licenses</div><span class="menu-arrow">›</span></div>
+
+    <div class="menu-section-title">Account Actions</div>
+    <div class="menu-item danger"><div class="menu-icon">🚪</div><div class="menu-label">Log Out</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item danger"><div class="menu-icon">🗑️</div><div class="menu-label">Delete Account</div><span class="menu-arrow">›</span></div>
+  </div>
+</div>
+
+<!-- SETTINGS -->
+<div class="page" id="page-settings">
+  <div class="page-header"><button class="back-btn" onclick="goPage('profile')">‹</button><h2>Settings ⚙️</h2></div>
+  <div class="settings-wrap">
+    <div class="settings-section">
+      <div class="settings-title">Appearance</div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Dark Mode</div><div class="setting-desc">Switch to dark theme</div></div><div class="toggle" id="darkToggle" onclick="toggleDark()"></div></div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Compact Grid</div><div class="setting-desc">Show more videos on screen</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-title">Notifications</div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">New Videos</div><div class="setting-desc">Alert when new videos added</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Friend Requests</div><div class="setting-desc">When someone adds you</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Messages</div><div class="setting-desc">New message alerts</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Earnings Alerts</div><div class="setting-desc">When you earn from uploads</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-title">Privacy</div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Private Profile</div><div class="setting-desc">Hide profile from others</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Friends Only Messages</div><div class="setting-desc">Only friends can message you</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Analytics Opt-out</div><div class="setting-desc">Don't share usage data</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+    <div class="settings-section">
+      <div class="settings-title">Downloads</div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Auto HD Quality</div><div class="setting-desc">Download in highest quality</div></div><div class="toggle on" onclick="this.classList.toggle('on')"></div></div>
+      <div class="setting-row"><div class="setting-info"><div class="setting-name">Save to Gallery</div><div class="setting-desc">Auto-save downloads to phone</div></div><div class="toggle" onclick="this.classList.toggle('on')"></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- AUTH -->
+<div class="page" id="page-auth">
+  <div class="auth-wrap">
+    <div class="auth-box">
+      <div class="auth-logo">Vid<span>sto</span></div>
+      <div class="auth-sub">Your video universe awaits ✨</div>
+      <div class="auth-tabs">
+        <div class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">Login</div>
+        <div class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</div>
+      </div>
+      <div id="loginForm">
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@email.com"/></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="••••••••"/></div>
+        <div class="forgot-link"><a href="#">Forgot password?</a></div>
+        <button class="btn-full">Login →</button>
+        <div class="auth-divider">or continue with</div>
+        <button class="social-btn">🌐 Continue with Google</button>
+        <button class="social-btn">📘 Continue with Facebook</button>
+        <button class="social-btn">🍎 Continue with Apple</button>
+        <div class="auth-switch">No account? <a href="#" onclick="switchAuthTab('signup')">Sign up free</a></div>
+      </div>
+      <div id="signupForm" style="display:none">
+        <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" placeholder="Your full name"/></div>
+        <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" placeholder="@username"/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@email.com"/></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Min 8 characters"/></div>
+        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date"/></div>
+        <button class="btn-full">Create Account 🚀</button>
+        <div class="auth-divider">or</div>
+        <button class="social-btn">🌐 Continue with Google</button>
+        <button class="social-btn">🍎 Continue with Apple</button>
+        <div class="auth-switch">Have account? <a href="#" onclick="switchAuthTab('login')">Login</a></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <div class="nav-item active" onclick="goPage('home')" id="nav-home"><span class="ni">🏠</span><span class="nl">Home</span></div>
+  <div class="nav-item" onclick="goPage('explore')" id="nav-explore"><span class="ni">🔍</span><span class="nl">Explore</span></div>
+  <div class="nav-item" onclick="goPage('upload')" id="nav-upload"><span class="ni">⬆️</span><span class="nl">Upload</span></div>
+  <div class="nav-item" onclick="goPage('friends')" id="nav-friends"><span class="ni">👥</span><span class="nl">Friends</span><div class="notif-dot"></div></div>
+  <div class="nav-item" onclick="goPage('profile')" id="nav-profile"><span class="ni">👤</span><span class="nl">Profile</span></div>
+</div>
+
+<script>
+const videos=[
+  {title:"Golden Hour City Timelapse",tag:"Stock",dl:"2.1k",dur:"0:32",emoji:"🌆",pro:false,color:"#FF6B35"},
+  {title:"Funny Cat Fails Compilation",tag:"Funny",dl:"5.4k",dur:"1:14",emoji:"😹",pro:false,color:"#FFB347"},
+  {title:"Cinematic Ocean Waves 4K",tag:"Stock",dl:"3.8k",dur:"0:45",emoji:"🌊",pro:true,color:"#4ECDC4"},
+  {title:"Glitch Transition Pack",tag:"Editing",dl:"8.2k",dur:"0:18",emoji:"⚡",pro:true,color:"#7C3AED"},
+  {title:"Rainy Street Aesthetic",tag:"Aesthetic",dl:"1.9k",dur:"0:28",emoji:"🌧️",pro:false,color:"#6C8EBF"},
+  {title:"Forest Walk POV Footage",tag:"Nature",dl:"2.7k",dur:"1:02",emoji:"🌲",pro:false,color:"#52B788"},
+  {title:"Viral Fail Moments",tag:"Funny",dl:"9.1k",dur:"2:05",emoji:"🤣",pro:false,color:"#FF6B6B"},
+  {title:"Neon City Night Drive",tag:"Urban",dl:"4.3k",dur:"0:55",emoji:"🚗",pro:true,color:"#FF006E"},
+  {title:"Color Grading LUT Pack",tag:"Editing",dl:"6.6k",dur:"0:10",emoji:"🎨",pro:true,color:"#A855F7"},
+  {title:"Drone Beach Sunrise",tag:"Stock",dl:"3.2k",dur:"0:40",emoji:"🏖️",pro:false,color:"#FB923C"},
+  {title:"Street Food Sizzle Reel",tag:"Food",dl:"1.5k",dur:"0:35",emoji:"🍜",pro:false,color:"#EF4444"},
+  {title:"Smoke & Fog VFX Elements",tag:"Editing",dl:"7.8k",dur:"0:22",emoji:"💨",pro:true,color:"#64748B"},
+];
+
+function makeCard(v,i){
+  const c=document.createElement('div');
+  c.className='video-card';
+  c.style.animationDelay=`${i*0.04}s`;
+  c.innerHTML=`<div class="thumb" style="background:linear-gradient(135deg,${v.color}22,${v.color}44);"><span style="font-size:30px">${v.emoji}</span><div class="play-btn">▶</div><div class="dur">${v.dur}</div>${v.pro?'<div class="pro-badge">PRO</div>':''}</div><div class="card-info"><div class="card-title">${v.title}</div><div class="card-meta"><span class="card-tag">${v.tag}</span><span class="card-dl">⬇ ${v.dl}</span></div></div>`;
+  return c;
+}
+videos.forEach((v,i)=>{
+  document.getElementById('homeGrid').appendChild(makeCard(v,i));
+  document.getElementById('exploreGrid').appendChild(makeCard(v,i));
+});
+
+const navMap={home:'nav-home',explore:'nav-explore',upload:'nav-upload',friends:'nav-friends',profile:'nav-profile'};
+function goPage(name){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-'+name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  if(navMap[name]) document.getElementById(navMap[name]).classList.add('active');
+  window.scrollTo(0,0);
+}
+
+let isDark=false;
+const darkToggle=document.getElementById('darkToggle');
+function toggleDark(){
+  isDark=!isDark;
+  document.documentElement.setAttribute('data-theme',isDark?'dark':'light');
+  document.getElementById('themeBtn').textContent=isDark?'☀️':'🌙';
+  darkToggle.classList.toggle('on',isDark);
+}
+document.getElementById('themeBtn').addEventListener('click',toggleDark);
+
+function filterCat(el){
+  document.querySelectorAll('.cat-pill').forEach(p=>p.classList.remove('active'));
+  el.classList.add('active');
+}
+
+function switchAuthTab(tab){
+  document.getElementById('loginTab').classList.toggle('active',tab==='login');
+  document.getElementById('signupTab').classList.toggle('active',tab==='signup');
+  document.getElementById('loginForm').style.display=tab==='login'?'block':'none';
+  document.getElementById('signupForm').style.display=tab==='signup'?'block':'none';
+}
+
+function switchFTab(el,id){
+  document.querySelectorAll('.ftab').forEach(t=>t.classList.remove('active'));
+  el.classList.add('active');
+  ['fl','chatlist','discover'].forEach(i=>document.getElementById(i).style.display='none');
+  document.getElementById(id).style.display='block';
+}
+
+function openChat(name,avatar){
+  document.getElementById('crName').textContent=name;
+  document.getElementById('crAvatar').textContent=avatar;
+  const cr=document.getElementById('page-chatroom');
+  cr.style.display='flex';
+}
+
+function closeChatRoom(){
+  document.getElementById('page-chatroom').style.display='none';
+  goPage('friends');
+}
+
+function sendMsg(){
+  const input=document.getElementById('chatInput');
+  const text=input.value.trim();
+  if(!text)return;
+  const msgs=document.getElementById('chatMessages');
+  const now=new Date();
+  const time=now.getHours()+':'+String(now.getMinutes()).padStart(2,'0');
+  const div=document.createElement('div');
+  div.className='msg mine';
+  div.innerHTML=`<div class="msg-bubble">${text}</div><div class="msg-time">${time}</div>`;
+  msgs.appendChild(div);
+  input.value='';
+  msgs.scrollTop=msgs.scrollHeight;
+  // Keep focus on mobile so keyboard stays open
+  setTimeout(()=>input.focus(),50);
+}
+document.getElementById('chatInput').addEventListener('keypress',e=>{if(e.key==='Enter'){e.preventDefault();sendMsg();}});
+
+// Prevent send button from stealing focus from input on mobile
+document.querySelector('.send-btn').addEventListener('touchstart',e=>{
+  e.preventDefault();
+  sendMsg();
+},{passive:false});
+</script>
+</body>
+</html>
