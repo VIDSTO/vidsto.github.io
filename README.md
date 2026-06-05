@@ -1,16 +1,61 @@
-## Hi there 👋
+# 🎬 Vidsto
 
-<!--
-**VIDSTO/VIDSTO** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
+> **Discover, Download & Share Stunning Videos — For Free**
 
-Here are some ideas to get you started:
+Vidsto is a free stock video platform where creators upload cinematic footage, funny clips, and editing materials for anyone to discover and download. Think Pinterest, but for videos.
 
-- 🔭 I’m currently working on ...
-- 🌱 I’m currently learning ...
-- 👯 I’m looking to collaborate on ...
-- 🤔 I’m looking for help with ...
-- 💬 Ask me about ...
-- 📫 How to reach me: ...
-- 😄 Pronouns: ...
-- ⚡ Fun fact: ...
--->
+---
+
+## ✨ Features
+
+- 🎬 **Stock Footage** — Cinematic, nature, urban, aesthetic clips
+- 😂 **Funny Clips** — Viral moments and fail compilations  
+- ✂️ **Editing Materials** — Transitions, VFX, LUT packs
+- 🔒 **Premium Plan** — 4K exclusives, no ads, unlimited downloads
+- 💰 **Creator Earnings** — Earn from ad views on your uploads
+- 👥 **Friends & Chat** — Connect and message other creators
+- 🌙 **Dark Mode** — Easy on the eyes
+- 📱 **Mobile First** — Built for phone, works on desktop too
+
+---
+
+## 🚀 Live Demo
+
+🌐 **[vidsto.github.io/VIDSTO](https://vidsto.github.io/VIDSTO)**
+
+---
+
+## 🛠️ Built With
+
+- HTML5
+- CSS3
+- Vanilla JavaScript
+- Supabase *(coming soon — auth & database)*
+- Cloudinary *(coming soon — video storage)*
+
+---
+
+## 📂 Project Status
+
+| Feature | Status |
+|---|---|
+| UI / Frontend | ✅ Done |
+| Dark / Light Mode | ✅ Done |
+| Friends & Chat UI | ✅ Done |
+| Supabase Auth | 🔄 In Progress |
+| Video Uploads | 🔄 In Progress |
+| Real-time Chat | 🔄 In Progress |
+| PWA Support | 🔄 Planned |
+| Google Analytics | 🔄 Planned |
+
+---
+
+## 👨‍💻 Developer
+
+Built by **VIDSTO** — started at age 15, on mobile 📱
+
+---
+
+## 📄 License
+
+MIT License — free to use and learn from.
