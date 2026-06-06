@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0"/>
 <title>Vidsto – Discover & Download Free Videos</title>
 <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 *,*::before,*::after{margin:0;padding:0;box-sizing:border-box;}
 html,body{width:100%;max-width:100%;overflow-x:hidden;}
@@ -531,7 +532,7 @@ nav{position:sticky;top:0;z-index:200;background:var(--nav-bg);backdrop-filter:b
     <div class="menu-item"><div class="menu-icon">©️</div><div class="menu-label">Licenses</div><span class="menu-arrow">›</span></div>
 
     <div class="menu-section-title">Account Actions</div>
-    <div class="menu-item danger"><div class="menu-icon">🚪</div><div class="menu-label">Log Out</div><span class="menu-arrow">›</span></div>
+    <div class="menu-item danger" onclick="doLogout()"><div class="menu-icon">🚪</div><div class="menu-label">Log Out</div><span class="menu-arrow">›</span></div>
     <div class="menu-item danger"><div class="menu-icon">🗑️</div><div class="menu-label">Delete Account</div><span class="menu-arrow">›</span></div>
   </div>
 </div>
@@ -576,27 +577,50 @@ nav{position:sticky;top:0;z-index:200;background:var(--nav-bg);backdrop-filter:b
         <div class="auth-tab active" id="loginTab" onclick="switchAuthTab('login')">Login</div>
         <div class="auth-tab" id="signupTab" onclick="switchAuthTab('signup')">Sign Up</div>
       </div>
+
+      <!-- AUTH MESSAGE -->
+      <div id="authMsg" style="display:none;padding:10px 14px;border-radius:10px;font-size:13px;margin-bottom:12px;text-align:center;"></div>
+
       <div id="loginForm">
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@email.com"/></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="••••••••"/></div>
-        <div class="forgot-link"><a href="#">Forgot password?</a></div>
-        <button class="btn-full">Login →</button>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="loginEmail" placeholder="you@email.com"/></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="loginPass" placeholder="••••••••"/></div>
+        <div class="forgot-link"><a href="#" onclick="forgotPassword()">Forgot password?</a></div>
+        <button class="btn-full" onclick="doLogin()">Login →</button>
         <div class="auth-divider">or continue with</div>
-        <button class="social-btn">🌐 Continue with Google</button>
-        <button class="social-btn">📘 Continue with Facebook</button>
-        <button class="social-btn">🍎 Continue with Apple</button>
+        <!-- Real Google logo -->
+        <button class="social-btn" onclick="loginGoogle()">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+          Continue with Google
+        </button>
+        <!-- Real Facebook logo -->
+        <button class="social-btn" onclick="loginFacebook()">
+          <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#1877F2" d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Continue with Facebook
+        </button>
+        <!-- Real Apple logo -->
+        <button class="social-btn" onclick="loginApple()">
+          <svg width="18" height="18" viewBox="0 0 814 1000"><path fill="#000" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 411.6 0 283.5 0 161.6c0-96.2 33.4-185.8 93.6-251.9C149 45.9 224 14 302 14c76 0 131.9 43.3 179.2 43.3 45.2 0 116.6-45.2 200.9-45.2 31.2 0 108.5 3.2 164.5 73.3zm-106.8-127.4c23.7-27.9 40.9-66.7 40.9-105.5 0-5.4-.5-10.9-1.6-15.3-38.3 1.4-85.5 25.6-113.4 56.4-21.9 24.3-42.3 63-42.3 102.5 0 6 1 12 1.5 13.9 2.4.4 6.3 1 10.2 1 34.5 0 78.3-23.2 104.7-53z"/></svg>
+          Continue with Apple
+        </button>
         <div class="auth-switch">No account? <a href="#" onclick="switchAuthTab('signup')">Sign up free</a></div>
       </div>
+
       <div id="signupForm" style="display:none">
-        <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" placeholder="Your full name"/></div>
-        <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" placeholder="@username"/></div>
-        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" placeholder="you@email.com"/></div>
-        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" placeholder="Min 8 characters"/></div>
-        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date"/></div>
-        <button class="btn-full">Create Account 🚀</button>
+        <div class="form-group"><label class="form-label">Full Name</label><input class="form-input" type="text" id="signupName" placeholder="Your full name"/></div>
+        <div class="form-group"><label class="form-label">Username</label><input class="form-input" type="text" id="signupUsername" placeholder="@username"/></div>
+        <div class="form-group"><label class="form-label">Email</label><input class="form-input" type="email" id="signupEmail" placeholder="you@email.com"/></div>
+        <div class="form-group"><label class="form-label">Password</label><input class="form-input" type="password" id="signupPass" placeholder="Min 8 characters"/></div>
+        <div class="form-group"><label class="form-label">Date of Birth</label><input class="form-input" type="date" id="signupDob"/></div>
+        <button class="btn-full" onclick="doSignup()">Create Account 🚀</button>
         <div class="auth-divider">or</div>
-        <button class="social-btn">🌐 Continue with Google</button>
-        <button class="social-btn">🍎 Continue with Apple</button>
+        <button class="social-btn" onclick="loginGoogle()">
+          <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.18 1.48-4.97 2.31-8.16 2.31-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/><path fill="none" d="M0 0h48v48H0z"/></svg>
+          Continue with Google
+        </button>
+        <button class="social-btn" onclick="loginApple()">
+          <svg width="18" height="18" viewBox="0 0 814 1000"><path fill="#000" d="M788.1 340.9c-5.8 4.5-108.2 62.2-108.2 190.5 0 148.4 130.3 200.9 134.2 202.2-.6 3.2-20.7 71.9-68.7 141.9-42.8 61.6-87.5 123.1-155.5 123.1s-85.5-39.5-164-39.5c-76 0-103.7 40.8-165.9 40.8s-105-57.8-155.5-127.4C46 411.6 0 283.5 0 161.6c0-96.2 33.4-185.8 93.6-251.9C149 45.9 224 14 302 14c76 0 131.9 43.3 179.2 43.3 45.2 0 116.6-45.2 200.9-45.2 31.2 0 108.5 3.2 164.5 73.3zm-106.8-127.4c23.7-27.9 40.9-66.7 40.9-105.5 0-5.4-.5-10.9-1.6-15.3-38.3 1.4-85.5 25.6-113.4 56.4-21.9 24.3-42.3 63-42.3 102.5 0 6 1 12 1.5 13.9 2.4.4 6.3 1 10.2 1 34.5 0 78.3-23.2 104.7-53z"/></svg>
+          Continue with Apple
+        </button>
         <div class="auth-switch">Have account? <a href="#" onclick="switchAuthTab('login')">Login</a></div>
       </div>
     </div>
@@ -713,6 +737,92 @@ document.querySelector('.send-btn').addEventListener('touchstart',e=>{
   e.preventDefault();
   sendMsg();
 },{passive:false});
+// ── SUPABASE AUTH ──
+const SUPABASE_URL='https://irundrzxgehexunehvrj.supabase.co';
+const SUPABASE_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImlydW5kcnp4Z2VoZXh1bmVodnJqIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA2OTc3OTgsImV4cCI6MjA5NjI3Mzc5OH0.YwVS4S1eG2Ed9Yy90fj9m0ULlZS580DS002xI6Wrp6w';
+let sb;
+window.addEventListener('load',()=>{
+  try{
+    sb=supabase.createClient(SUPABASE_URL,SUPABASE_KEY);
+    sb.auth.onAuthStateChange((event,session)=>{
+      if(session&&session.user) updateProfileUI(session.user);
+    });
+  }catch(e){console.log('Supabase init error:',e);}
+});
+
+function updateProfileUI(user){
+  const name=user.user_metadata?.full_name||user.email?.split('@')[0]||'User';
+  const el=document.querySelector('.profile-name');
+  const handle=document.querySelector('.profile-handle');
+  if(el) el.textContent=name;
+  if(handle) handle.textContent='@'+name.toLowerCase().replace(/\s/g,'')+'  · Joined '+new Date(user.created_at).getFullYear();
+  document.querySelectorAll('.btn-login,.btn-signup').forEach(e=>e.style.display='none');
+}
+
+function showAuthMsg(msg,isError){
+  const el=document.getElementById('authMsg');
+  el.style.display='block';
+  el.style.background=isError?'#FEE2E2':'#D1FAE5';
+  el.style.color=isError?'#991B1B':'#065F46';
+  el.textContent=msg;
+  setTimeout(()=>el.style.display='none',4000);
+}
+
+async function doLogin(){
+  if(!sb){showAuthMsg('Still loading, try again!',true);return;}
+  const email=document.getElementById('loginEmail').value.trim();
+  const pass=document.getElementById('loginPass').value;
+  if(!email||!pass){showAuthMsg('Please fill all fields',true);return;}
+  const {data,error}=await sb.auth.signInWithPassword({email,password:pass});
+  if(error){showAuthMsg(error.message,true);return;}
+  showAuthMsg('Welcome back! 🎉',false);
+  setTimeout(()=>goPage('home'),1000);
+}
+
+async function doSignup(){
+  if(!sb){showAuthMsg('Still loading, try again!',true);return;}
+  const name=document.getElementById('signupName').value.trim();
+  const email=document.getElementById('signupEmail').value.trim();
+  const pass=document.getElementById('signupPass').value;
+  if(!name||!email||!pass){showAuthMsg('Please fill all fields',true);return;}
+  if(pass.length<8){showAuthMsg('Password must be at least 8 characters',true);return;}
+  const {data,error}=await sb.auth.signUp({email,password:pass,options:{data:{full_name:name}}});
+  if(error){showAuthMsg(error.message,true);return;}
+  showAuthMsg('Account created! Check your email to verify ✅',false);
+}
+
+async function forgotPassword(){
+  if(!sb){showAuthMsg('Still loading, try again!',true);return;}
+  const email=document.getElementById('loginEmail').value.trim();
+  if(!email){showAuthMsg('Enter your email first',true);return;}
+  const {error}=await sb.auth.resetPasswordForEmail(email);
+  if(error){showAuthMsg(error.message,true);return;}
+  showAuthMsg('Password reset email sent! 📧',false);
+}
+
+async function loginGoogle(){
+  if(!sb){showAuthMsg('Still loading, try again!',true);return;}
+  const {error}=await sb.auth.signInWithOAuth({provider:'google',options:{redirectTo:window.location.href}});
+  if(error) showAuthMsg(error.message,true);
+}
+
+async function loginFacebook(){
+  if(!sb){showAuthMsg('Still loading, try again!',true);return;}
+  const {error}=await sb.auth.signInWithOAuth({provider:'facebook',options:{redirectTo:window.location.href}});
+  if(error) showAuthMsg(error.message,true);
+}
+
+async function loginApple(){
+  if(!sb){showAuthMsg('Still loading, try again!',true);return;}
+  const {error}=await sb.auth.signInWithOAuth({provider:'apple',options:{redirectTo:window.location.href}});
+  if(error) showAuthMsg(error.message,true);
+}
+
+async function doLogout(){
+  if(!sb) return;
+  await sb.auth.signOut();
+  window.location.reload();
+}
 </script>
 </body>
 </html>
