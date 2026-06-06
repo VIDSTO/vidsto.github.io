@@ -1,12 +1,12 @@
 const CACHE_NAME = 'vidsto-v1';
 const ASSETS = [
-  '/VIDSTO/',
-  '/VIDSTO/index.html',
-  '/VIDSTO/manifest.json',
-  '/VIDSTO/favicon-96x96.png',
-  '/VIDSTO/web-app-manifest-192x192.png',
-  '/VIDSTO/web-app-manifest-512x512.png',
-  '/VIDSTO/apple-touch-icon.png'
+  '',
+  'index.html',
+  'manifest.json',
+  'favicon-96x96.png',
+  'web-app-manifest-192x192.png',
+  'web-app-manifest-512x512.png',
+  'apple-touch-icon.png'
 ];
 
 // Install — cache all assets
