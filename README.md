@@ -21,7 +21,7 @@ Vidsto is a free stock video platform where creators upload cinematic footage, f
 
 ## 🚀 Live Demo
 
-🌐 **[vidsto.github.io/VIDSTO](https://vidsto.github.io)**
+🌐 **[vidsto.github.io/VIDSTO](https://vidsto.github.io/VIDSTO)**
 
 ---
 
