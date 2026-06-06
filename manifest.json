@@ -1,8 +1,8 @@
 {
   "name": "Vidsto – Discover & Download Free Videos",
-  "short_name": "Vidsto",
+  "short_name": "V",
   "description": "Free stock footage, funny clips and editing materials",
-  "start_url": "/",
+  "start_url": "/index.html",
   "scope": "/",
   "display": "standalone",
   "background_color": "#0D0B14",
